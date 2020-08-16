@@ -227,6 +227,7 @@ static void updatestatus(void);
 static void updatetitle(Client *c);
 static void updatewindowtype(Client *c);
 static void updatewmhints(Client *c);
+static void viewMove(const Arg *arg);
 static void view(const Arg *arg);
 static Client *wintoclient(Window w);
 static Monitor *wintomon(Window w);
@@ -2033,6 +2034,26 @@ updatewmhints(Client *c)
 			c->neverfocus = 0;
 		XFree(wmh);
 	}
+}
+
+void
+viewMove(const Arg *arg)
+{
+	unsigned int new_seltags = 0;
+
+	if (arg->i > 0) {
+		new_seltags = selmon->tagset[selmon->seltags] << 1;
+	} else if (arg->i < 0) {
+		new_seltags = selmon->tagset[selmon->seltags] >> 1;
+	}
+
+	// change tag only if new_seltags within range
+	if (new_seltags & TAGMASK) {
+		selmon->tagset[selmon->seltags] = new_seltags;
+	}
+
+	focus(NULL);
+	arrange(selmon);
 }
 
 void
